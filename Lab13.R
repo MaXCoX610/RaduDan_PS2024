@@ -1,15 +1,20 @@
-data <- scan("history.txt")
+selection_mean <- function(filename) {
+  x <- scan(filename)
+  m <- mean(x)
+  n <- length(x)
 
-sample_mean <- mean(data)
-sample_size <- length(data)
+  return(list(mean = m, sample_size = n))
+}
 
+result <- selection_mean("history.txt")
+
+m <- result$mean
+n <- result$sample_size
 sigma <- 5
-confidence_level <- 0.95
-Z <- qnorm((1 + confidence_level) / 2)
 
-margin_of_error <- Z * sigma / sqrt(sample_size)
-lower_bound <- sample_mean - margin_of_error
-upper_bound <- sample_mean + margin_of_error
+error_margin <- qnorm(0.975) * (sigma / sqrt(n))
+confidence_interval <- c(m - error_margin, m + error_margin)
 
-cat("Intervalul de încredere de 95% este [", lower_bound, ", ", upper_bound, "]\n")
-
+cat("Media de selecție:", m, "\n")
+cat("Dimensiunea eșantionului:", n, "\n")
+cat("Intervalul de încredere de 95%:", confidence_interval, "\n")
