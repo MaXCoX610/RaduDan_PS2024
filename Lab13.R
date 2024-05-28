@@ -12,3 +12,4 @@ lower_bound <- sample_mean - margin_of_error
 upper_bound <- sample_mean + margin_of_error
 
 cat("Intervalul de încredere de 95% este [", lower_bound, ", ", upper_bound, "]\n")
+
