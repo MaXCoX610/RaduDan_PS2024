@@ -1,1 +1,117 @@
+#B1
+estimate_torus_volume <- function(R, r, n_samples) {
 
+  min_bound <- -R - r
+  max_bound <- R + r
+
+  x1 <- runif(n_samples, min_bound, max_bound)
+  x2 <- runif(n_samples, min_bound, max_bound)
+  x3 <- runif(n_samples, -r, r)
+
+  inside_torus <- (x3^2 + (sqrt(x1^2 + x2^2) - R)^2) < r^2
+  
+  volume_cube <- (2 * (R + r))^2 * (2 * r)
+  
+  volume_torus <- volume_cube * sum(inside_torus) / n_samples
+  
+  return(volume_torus)
+}
+
+R <- 10
+r <- 3
+exact_volume <- 2 * pi^2 * R * r^2
+
+sample_sizes <- c(10000, 20000, 50000)
+
+results <- data.frame(Sample_Size = sample_sizes, Estimated_Volume = NA, Relative_Error = NA)
+
+for (i in 1:length(sample_sizes)) {
+  estimated_volume <- estimate_torus_volume(R, r, sample_sizes[i])
+  relative_error <- abs(estimated_volume - exact_volume) / exact_volume
+  results$Estimated_Volume[i] <- estimated_volume
+  results$Relative_Error[i] <- relative_error
+}
+print(results)
+
+#B2
+T <- function(x, y) {
+  y > 0 & x > y & x + y < 6 - 3 * x^2
+}
+
+N <- 20000
+x_points <- runif(N, min = 0, max = 2)  
+y_points <- runif(N, min = 0, max = 2)  
+
+points_inside_T <- sum(T(x_points, y_points))
+proportion_inside_T <- points_inside_T / N
+
+area_D <- 2 * 2 
+
+area_T_estimate <- area_D * proportion_inside_T
+
+cat("Estimarea ariei triunghiului T folosind metoda Monte Carlo:", area_T_estimate, "\n")
+
+#B3
+#a)
+
+f <- function(x) {
+  (2*x - 1) / (x^2 - x - 6)
+}
+
+result_a <- integrate(f, lower = 1, upper = exp(1))
+
+cat("Rezultatul integralei (ln3 - ln2):", result_a$value, "\n")
+
+#b)
+
+g <- function(x) {
+  (x + 4) / sqrt(x^3 - 3)
+}
+
+result_b <- integrate(g, lower = 3, upper = 11)
+
+cat("Rezultatul integralei definite (6*sqrt(12)):", result_b$value, "\n")
+
+#c)
+
+h <- function(x) {
+  exp(-x^2)
+}
+
+result_c <- integrate(h, lower = 0, upper = Inf)
+
+cat("Rezultatul integralei improprii (1/2 * sqrt(pi)):", result_c$value, "\n")
+
+
+#B4
+#a)
+n <- 10000
+p <- 0.25
+q <- 0.01
+target_users <- 15000
+
+mean_years <- (target_users - n * (1 - q)) / (n * p)
+
+cat("Numărul mediu de ani până când iSocialize va avea cel puțin 15000 de utilizatori:", mean_years, "\n")
+
+#b)
+years <- 40 + 10/12
+prob_40_years <- pbinom(target_users - 1, size = n, prob = p, lower.tail = FALSE)
+
+cat("Probabilitatea ca după 40 ani și 10 luni să existe cel puțin 15000 de utilizatori:", prob_40_years, "\n")
+
+#c)
+error_margin <- 0.01
+desired_prob <- 0.99
+
+estimate_with_error <- function(p, n, q, target_users, error_margin, desired_prob) {
+  z <- qnorm(desired_prob + error_margin / 2)
+  p_estimate <- (target_users - n * (1 - q)) / n
+  p_lower <- p_estimate - z * sqrt(p_estimate * (1 - p_estimate) / n)
+  p_upper <- p_estimate + z * sqrt(p_estimate * (1 - p_estimate) / n)
+  return(list(p_estimate = p_estimate, p_lower = p_lower, p_upper = p_upper))
+}
+
+result <- estimate_with_error(p, n, q, target_users, error_margin, desired_prob)
+
+cat("Estimarea probabilității cu eroare (", desired_prob, "): [", result$p_lower, ", ", result$p_upper, "]\n")
