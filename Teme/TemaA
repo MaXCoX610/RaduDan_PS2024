@@ -1,128 +1,146 @@
-#A1
-calc_prob_poisson <- function(lambda, k, m) {
-  x <- k:(k + m)
-  probs <- dpois(x, lambda)
-  return(probs)
-}
+# A1. Se dau urmatorii parametri: lambda, p, n, m, k, astfel incat 0 <= k < m <= n.
 
-calc_prob_geometric <- function(p, k, m) {
-  x <- k:(k + m)
-  probs <- dgeom(x, p)
-  return(probs)
-}
+# Valori aleatorii pentru lambda, p, n, m, k
+lambda = 2.5; p = 0.3; n = 10; m = 8; k = 3
 
-calc_prob_binomial <- function(n, p, k, m) {
-  x <- k:(k + m)
-  probs <- dbinom(x, n, p)
-  return(probs)
-}
+# a) Scrieti o functie care sa calculeze probabilitatile corespunzatoare valorilor k, k+1, ..., m, pentru distributiile Poisson(λ), Geometric(p), B(n, p).
 
-plot_poisson <- function(lambda, k, m) {
-  x <- k:(k + m)
-  probs <- dpois(x, lambda)
-  plot(x, probs, type = "h", lwd = 2, col = "blue", 
-       xlab = "x", ylab = "P(X=x)", main = paste("Poisson Distribution (lambda =", lambda, ")"))
-}
-
-plot_geometric <- function(p, k, m) {
-  x <- k:(k + m)
-  probs <- dgeom(x, p)
-  plot(x, probs, type = "h", lwd = 2, col = "green", 
-       xlab = "x", ylab = "P(X=x)", main = paste("Geometric Distribution (p =", p, ")"))
-}
-
-plot_binomial <- function(n, p, k, m) {
-  x <- k:(k + m)
-  probs <- dbinom(x, n, p)
-  plot(x, probs, type = "h", lwd = 2, col = "red", 
-       xlab = "x", ylab = "P(X=x)", main = paste("Binomial Distribution (n =", n, ", p =", p, ")"))
-}
-
-calc_k0_poisson <- function(lambda) {
-  threshold <- 1 - 10^(-6)
-  k0 <- 0
-  cum_prob <- ppois(k0, lambda)
-  while (cum_prob <= threshold) {
-    k0 <- k0 + 1
-    cum_prob <- ppois(k0, lambda)
-  }
-  return(k0)
-}
-
-# Parametrii
-lambda <- 3.5
-p <- 0.2
-n <- 10
-k <- 0
-m <- 10
-
-probs_poisson <- calc_prob_poisson(lambda, k, m)
-probs_geometric <- calc_prob_geometric(p, k, m)
-probs_binomial <- calc_prob_binomial(n, p, k, m)
-
-print(probs_poisson)
-print(probs_geometric)
-print(probs_binomial)
-
-plot_poisson(lambda, k, m)
-plot_geometric(p, k, m)
-plot_binomial(n, p, k, m)
-k0 <- calc_k0_poisson(lambda)
-print(k0)
-
-#A2
-
-process_grades <- function(filename) {
-
-  data <- read.table(filename, header = TRUE)
+calcul_probabilitati = function(lambda, p, n, m, k) {
+  interval = k:m
   
-  freq_absolute_P <- table(data$P)
-  freq_absolute_S <- table(data$S)
+  poisson = dpois(interval, lambda)
+  geometric = dgeom(interval, p)
+  b = dbinom(interval, n, p)
   
-  freq_relative_P <- prop.table(freq_absolute_P)
-  freq_relative_S <- prop.table(freq_absolute_S)
-  
-  mean_P <- mean(data$P)
-  mean_S <- mean(data$S)
-  
-  list(
-    freq_absolute_P = as.vector(freq_absolute_P),
-    freq_relative_P = as.vector(freq_relative_P),
-    freq_absolute_S = as.vector(freq_absolute_S),
-    freq_relative_S = as.vector(freq_relative_S),
-    mean_P = mean_P,
-    mean_S = mean_S
-  )
+  cat(" Poisson:", "\n", poisson, "\n\n", "Geometric:", "\n", geometric, "\n\n", "Binomial:", "\n", b, "\n\n")
 }
 
-result <- process_grades("note_PS.txt")
-print(result)
+calcul_probabilitati(lambda, p, n, m, k)
 
+# b) Scrieti o functie care sa reprezinte grafic functiile de masa de probabilitate.
 
-process_and_plot <- function(filename) {
-  data <- read.table(filename, header = TRUE)
+grafic_probabilitati = function(lambda, p, n, m, k) {
+  interval = k:m
   
-  remove_outliers <- function(x) {
-    Q1 <- quantile(x, 0.25)
-    Q3 <- quantile(x, 0.75)
-    IQR <- Q3 - Q1
-    lower_bound <- Q1 - 1.5 * IQR
-    upper_bound <- Q3 + 1.5 * IQR
-    x[x >= lower_bound & x <= upper_bound]
+  # Setez layout-ul graficului pentru a afisa simultan 3 grafice
+  par(mfrow = c(3, 1))
+  
+  # Calculam probabilitatile
+  poisson = dpois(interval, lambda)
+  geometric = dgeom(interval, p)
+  b = dbinom(interval, n, p)
+  
+  # Grafic Poisson
+  barplot(poisson, interval, main = 'Distributia Poisson', xlab = 'Valori', ylab = 'Probabilitati', col = 'lightcoral')
+  
+  # Grafic Geometric
+  barplot(geometric, interval, main = 'Distributia Geometrica', xlab = 'Valori', ylab = 'Probabilitati', col = 'lightcoral')
+  
+  # Grafic Binomial
+  barplot(b, interval, main = 'Distributia Binomiala', xlab = 'Valori', ylab = 'Probabilitati', col = 'lightcoral')
+  
+  # Resetam layout-ul graficului
+  par(mfrow = c(1, 1))
+}
+
+grafic_probabilitati(lambda, p, n, m, k)
+
+# c) Fie Y : Poisson(λ); determinati cea mai mica valoare a lui k0 pentru care P(Y <= k0) > 1 − 10^(−6).
+
+calcul_k0_minim = function(lambda) {
+  k0 = 0
+  suma_probabilitati = 0
+  probabilitate = 1 - 10 ^ (- 6)
+  
+  # Iteram pentru a gasi cea mai mica valoare a lui k0 care satisface conditia
+  while (suma_probabilitati <= probabilitate) {
+    suma_probabilitati = suma_probabilitati + dpois(k0, lambda)
+    if (suma_probabilitati <= probabilitate)
+      k0 = k0 + 1
   }
   
-  clean_P <- remove_outliers(data$P)
-  clean_S <- remove_outliers(data$S)
-  
-  freq_clean_P <- table(cut(clean_P, breaks = seq(0, 10, by = 1)))
-  freq_clean_S <- table(cut(clean_S, breaks = seq(0, 10, by = 1)))
-  
-  par(mfrow = c(1, 2))
-  barplot(freq_clean_P, main = "Distribuția frecvențelor pentru P", xlab = "Intervale", ylab = "Frecvență", col = "blue")
-  barplot(freq_clean_S, main = "Distribuția frecvențelor pentru S", xlab = "Intervale", ylab = "Frecvență", col = "green")
-  
-  list(clean_P = clean_P, clean_S = clean_S)
+  cat("Cea mai mica valoare a lui k0 care satisface conditia este:", k0, "\n")
 }
 
-cleaned_data <- process_and_plot("note_PS.txt")
-print(cleaned_data)
+calcul_k0_minim(lambda)
+
+# ****************************************************************************************************************************************************** #
+
+# A2. Fisierul "note_PS.csv" contine notele (pe doua coloane "P" si "S") obtinute de studentii dintr-un an anterior la Probabilitati si statistica.
+
+# a) Scrieti o functie care deschide fisierul, citeste datele si construieste cele doua esantioane si apoi determina frecventele absolute si cele relative
+#    (Folositi functia table() pentru a calcula frecventele si apoi functia as.vector() pentru a le extrage din tablou). Calculati apoi mediile celor doua
+#    esantioane vazute ca variabile aleatoare.
+
+frecvente_note_PS = function(file_name) {
+  # Citim notele din fisierul specificat
+  note = read.csv(file_name, header = TRUE, sep = ",") # header = true -> prima linie contine P,S
+  
+  # Construim cele doua esantioane din coloanele corespunzatoare
+  esantion_P = note$P
+  esantion_S = note$S
+  
+  # Calculam frecventele absolute pentru fiecare esantion
+  frecvente_absolute_P = as.vector(table(esantion_P))
+  frecvente_absolute_S = as.vector(table(esantion_S))
+  
+  # Calculam frecventele relative pentru fiecare esantion
+  frecvente_relative_P = frecvente_absolute_P / length(esantion_P)
+  frecvente_relative_S = frecvente_absolute_S / length(esantion_S)
+  
+  # Calculam media pentru fiecare esantion
+  media_P = mean(esantion_P)
+  media_S = mean(esantion_S)
+  
+  # Rezultatele pentru esantionul P
+  cat(" Frecventele absolute pentru esantionul P:\n", frecvente_absolute_P, "\n\n")
+  cat(" Frecventele relative pentru esantionul P:\n", frecvente_relative_P, "\n\n")
+  
+  # Rezultatele pentru esantionul S
+  cat(" Frecventele absolute pentru esantionul S:\n", frecvente_absolute_S, "\n\n")
+  cat(" Frecventele relative pentru esantionul S:\n", frecvente_relative_S, "\n\n")
+  
+  # Mediile pentru fiecare esantion
+  cat(" Media esantionului P:", media_P, "\n\n")
+  cat(" Media esantionului S:", media_S, "\n\n")
+}
+
+frecvente_note_PS("note_PS.csv")
+
+# b) Scrieti o functie care sa determine valorile aberante (daca exista) folosind una dintre cele doua metode cunoscute si sa le elimine din
+#    esantion (parametrii functii sunt numele fisierului si numele esantionului) si returneaza esantionul fara valorile aberante). In aceeasi
+#    functie trebuie sa reprezentati grafic distributia frecventelor din esantioanele astfel curatate pe intervalele (1, 2], (2, 3], ..., (9, 10].
+
+elimina_valori_aberante = function(file_name, esantion_name) {
+  # Citim datele din fisierul specificat
+  date = read.csv(file_name, header = TRUE, sep = ",")
+  
+  # Extragem esantionul specificat
+  esantion = date[[esantion_name]]
+  
+  # Calculam media si deviatia standard a esantionului
+  m = mean(esantion)
+  s = sd(esantion)
+  
+  # Detectam valorile aberante si le eliminam din esantion
+  outliers =  esantion_curatat = vector()
+  j = k = 0
+  for (i in 1:length(esantion)) {
+    if (esantion[i] < m - 2 * s || esantion[i] > m + 2 * s) {
+        j = j + 1
+        outliers[j] = esantion[i]
+    }
+    else {
+      k = k + 1
+      esantion_curatat[k] = esantion[i]
+    }
+  }
+  
+  # Reprezentam grafic distributia frecventelor din esantionul curatat
+  hist(esantion, breaks = seq(1, 10, by = 1), main = "Distributia frecventelor", xlab = "Intervale", ylab = "Frecventă", col = "lightcoral")
+  
+  # Returnam esantionul curatat
+  return(esantion_curatat)
+}
+
+elimina_valori_aberante("note_PS.csv", "P")
