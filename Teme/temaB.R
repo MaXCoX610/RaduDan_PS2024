@@ -1,15 +1,15 @@
 # B1
 
 estimare_volum_tor_circular = function(R, r, esantion) {
-  # Initializam numarul de puncte in interiorul torului
+  # Initializez numarul de puncte in interiorul torului
   N_C = 0
   
-  # Definim limitele cubului care contine torul
+  # Definesc limitele cubului care contine torul
   x1_min = -R - r; x1_max = R + r
   x2_min = -R - r; x2_max = R + r
   x3_min = -r; x3_max = r
   
-  # Generam puncte aleatorii in cubul care contine torul
+  # Generez puncte aleatorii in cubul care contine torul
   for (i in 1:esantion) {
     x = runif(1, x1_min, x1_max)
     y = runif(1, x2_min, x2_max)
@@ -19,11 +19,11 @@ estimare_volum_tor_circular = function(R, r, esantion) {
       N_C = N_C + 1
   }
   
-  # Calculam volumul cubului
+  # Calculez volumul cubului
   volum_cub = (x1_max - x1_min) * (x2_max - x2_min) * (x3_max - x3_min)
   
-  # Estimam volumul torului
-  volum_estimat = (N_C / esantion) * volum_cub
+  # Estimez volumul torului
+  volum_estimat = (N_C / esantion) * volum_cub #Metoda Monte Carlo
   
   return(volum_estimat)
 }
@@ -42,14 +42,13 @@ erori_relative = function(R, r, esantioane) {
 erori_relative(10, 3, c(10000, 20000, 50000))
 
 # ********************************************************************************************************* #
-
 # B2.
 
 estimare_arie_T = function(a, b, c, d, esantion) {
-  # Initializam numarul de puncte in interiorul triunghiului
+  # Initializez numarul de puncte in interiorul triunghiului
   N_C = 0
   
-  # Generam puncte aleatorii in patrulaterul care contine triunghiul
+  # Generez puncte aleatorii in patrulaterul care contine triunghiul
   for (i in 1:esantion) {
     x = runif(1, a, b)
     y = runif(1, c, d)
@@ -58,7 +57,7 @@ estimare_arie_T = function(a, b, c, d, esantion) {
       N_C = N_C + 1
   }
   
-  # Estimam aria triunghiului
+  # Estimez aria triunghiului
   arie_estimata = (N_C / esantion) * ((b - a)  * (d - c))
   
   print(arie_estimata)
@@ -169,7 +168,7 @@ simulate_iSocialize_a = function(n, p, q, initial_users, target_users) {
   return(years)
 }
 
-# Simulam de mai multe ori pentru a estima numarul mediu de ani
+# Simulez de mai multe ori pentru a estima numarul mediu de ani
 results = numeric(1000)
 for (i in 1:1000)
   results[i] = simulate_iSocialize_a(1000, 0.25, 0.01, 10000, 15000)
@@ -220,19 +219,19 @@ simulate_users = function(initial_users, n, p, q, periods) {
 years = 40 ; months = 10
 total_periods = years + months / 12 # Convert years and months to total periods (fractional years)
 
-# Simulam de mai multe ori pentru a estima probabilitatea
+# Simulez de mai multe ori pentru a estima probabilitatea
 user_counts = numeric(100000)
 for (i in 1:100000)
   user_counts[i] = simulate_users(10000, 1000, 0.25, 0.01, total_periods)
 
-# Estimam probabilitatea
+# Estimez probabilitatea
 probability = mean(user_counts >= 15000)
 cat("Probabilitate estimata:", probability, "\n")
 
 # ********************************************************************************************************* #
 
 # c)
-# Definim parametrii necesari calculului
+# Definesc parametrii necesari calculului
 alfa = 1 - 0.99 # 99% confidence level
 z = qnorm(1 - alfa / 2) # Z-score for the confidence level
 epsilon = 0.01 # Marginea erorii
@@ -242,11 +241,11 @@ p_estimate = 0.69 # Rezultatul asteptat
 N_min = p_estimate * (1 - p_estimate) * (z / epsilon)^2
 N_min = ceiling(N_min)
 
-# Simulam de N_min ori pentru a estima probabilitatea
+# Simulez de N_min ori pentru a estima probabilitatea
 user_counts = numeric(N_min)
 for (i in 1:N_min)
   user_counts[i] = simulate_users(10000, 1000, 0.25, 0.01, total_periods)
 
-# Estimam probabilitatea
+# Estimez probabilitatea
 probability = mean(user_counts >= 15000)
 cat("Probabilitate estimata:", probability, "\n")
