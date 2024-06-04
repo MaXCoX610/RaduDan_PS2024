@@ -3,6 +3,8 @@
 # Valori aleatorii pentru lambda, p, n, m, k
 lambda = 2.5; p = 0.3; n = 10; m = 8; k = 3
 
+#Scriet¸i o funct¸ie care s˘a calculeze probabilit˘at¸ile corespunz˘atoare valorilor k, k +1, . . . , m pentru distribut¸itle Poisson(λ), Geometric(p) ¸si B(n, p).
+
 # a)
 calcul_probabilitati = function(lambda, p, n, m, k) {
   interval = k:m
