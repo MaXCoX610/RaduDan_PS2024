@@ -23,7 +23,7 @@ grafic_probabilitati = function(lambda, p, n, m, k) {
   # Setez layout-ul graficului pentru a afisa simultan 3 grafice
   par(mfrow = c(3, 1))
   
-  # Calculam probabilitatile
+  # Calculez probabilitatile
   poisson = dpois(interval, lambda)
   geometric = dgeom(interval, p)
   b = dbinom(interval, n, p)
@@ -37,7 +37,7 @@ grafic_probabilitati = function(lambda, p, n, m, k) {
   # Grafic Binomial
   barplot(b, interval, main = 'Distributia Binomiala', xlab = 'Valori', ylab = 'Probabilitati', col = 'lightcoral')
   
-  # Resetam layout-ul graficului
+  # Resetez layout-ul graficului
   par(mfrow = c(1, 1))
 }
 
@@ -49,7 +49,7 @@ calcul_k0_minim = function(lambda) {
   suma_probabilitati = 0
   probabilitate = 1 - 10 ^ (- 6)
   
-  # Iteram pentru a gasi cea mai mica valoare a lui k0 care satisface conditia
+  # Iterez pentru a gasi cea mai mica valoare a lui k0 care satisface conditia
   while (suma_probabilitati <= probabilitate) {
     suma_probabilitati = suma_probabilitati + dpois(k0, lambda)
     if (suma_probabilitati <= probabilitate)
@@ -67,22 +67,22 @@ calcul_k0_minim(lambda)
 
 # a)
 frecvente_note_PS = function(file_name) {
-  # Citim notele din fisierul specificat
+  # Citesc notele din fisierul specificat
   note = read.csv(file_name, header = TRUE, sep = ",")
   
-  # Construim cele doua esantioane din coloanele corespunzatoare
+  # Construiesc cele doua esantioane din coloanele corespunzatoare
   esantion_P = note$P
   esantion_S = note$S
   
-  # Calculam frecventele absolute pentru fiecare esantion
+  # Calculez frecventele absolute pentru fiecare esantion
   frecvente_absolute_P = as.vector(table(esantion_P))
   frecvente_absolute_S = as.vector(table(esantion_S))
   
-  # Calculam frecventele relative pentru fiecare esantion
+  # Calculez frecventele relative pentru fiecare esantion
   frecvente_relative_P = frecvente_absolute_P / length(esantion_P)
   frecvente_relative_S = frecvente_absolute_S / length(esantion_S)
   
-  # Calculam media pentru fiecare esantion
+  # Calculez media pentru fiecare esantion
   media_P = mean(esantion_P)
   media_S = mean(esantion_S)
   
@@ -103,17 +103,17 @@ frecvente_note_PS("note_PS.csv")
 
 # b)
 elimina_valori_aberante = function(file_name, esantion_name) {
-  # Citim datele din fisierul specificat
+  # Citesc datele din fisierul specificat
   date = read.csv(file_name, header = TRUE, sep = ",")
   
-  # Extragem esantionul specificat
+  # Extrag esantionul specificat
   esantion = date[[esantion_name]]
   
-  # Calculam media si deviatia standard a esantionului
+  # Calculez media si deviatia standard a esantionului
   m = mean(esantion)
   s = sd(esantion)
   
-  # Detectam valorile aberante si le eliminam din esantion
+  # Detectez valorile aberante si le elimin din esantion
   outliers =  esantion_curatat = vector()
   j = k = 0
   for (i in 1:length(esantion)) {
@@ -127,12 +127,12 @@ elimina_valori_aberante = function(file_name, esantion_name) {
     }
   }
   
-  # Reprezentam grafic distributia frecventelor din esantionul curatat
+  # Reprezint grafic distributia frecventelor din esantionul curatat
   intervale = cut(esantion, breaks = seq(1, 10, by = 1))
   frecvente = table(intervale)
   barplot(frecvente, main = "Distributia frecventelor", xlab = "Intervale", ylab = "Frecventa", col = "lightcoral")
   
-  # Returnam esantionul curatat
+  # Returnez esantionul curatat
   return(esantion_curatat)
 }
 
